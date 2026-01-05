@@ -1,0 +1,13 @@
+# /etc/systemd/system/reverse-tunnel.service
+[Unit]
+Description=Reverse SSH Tunnel to Azure VM
+After=network.target
+
+[Service]
+User=admin
+ExecStart=/var/tmp/EPI-Tutorial.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
