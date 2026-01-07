@@ -26,7 +26,7 @@ az group create --name $RESOURCE_GROUP --location $LOCATION
 # "System updaten" & "SSH configureren" are done inside the VM later.
 # Authentication type: Password
 echo "Creating Virtual Machine: $VM_NAME..."
-az vm create --resource-group $RESOURCE_GROUP --name $VM_NAME --image $IMAGE_URN --size $VM_SIZE --admin-username $ADMIN_USER --admin-password $ADMIN_PASS --authentication-type password --public-ip-sku Standard --verbose
+az vm create --resource-group $RESOURCE_GROUP --name $VM_NAME --image $IMAGE_URN --size $VM_SIZE --admin-username $ADMIN_USER --admin-password $ADMIN_PASS --authentication-type password --public-ip-sku Standard
 
 # 3. Open Ports
 # Open the custom tunnel port (e.g., 2222)
