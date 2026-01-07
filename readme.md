@@ -33,7 +33,7 @@ In plaats van handmatig door het Azure Portal te klikken, gebruiken we een scrip
 1. Ga naar [portal.azure.com](https://portal.azure.com) en open de **Cloud Shell** (icoon bovenaan, naast de zoekbalk). Zorg dat deze op **Bash** staat.
 2. Voer het volgende commando uit in de Cloud Shell om het script te downloaden en uit te voeren:
    ```bash
-   curl -o AzureVM_verbose.AZ https://raw.githubusercontent.com/fortnite-bot/EPI-S3/refs/heads/main/AzureVM_verbose.AZ && chmod +x AzureVM_verbose.AZ && source ./AzureVM_verbose.AZ
+   curl -o AzureVM_verbose.AZ https://raw.githubusercontent.com/fortnite-bot/EPI-S3/refs/heads/main/AzureVM_verbose.AZ && tr -d '\r' < AzureVM_verbose.AZ > AzureVM_verbose.fixed.AZ && mv AzureVM_verbose.fixed.AZ AzureVM_verbose.AZ && chmod +x AzureVM_verbose.AZ && source ./AzureVM_verbose.AZ
    ```
    *(We gebruiken `source` omdat het bestand variabele-definities en Azure CLI commando's bevat)*
 
@@ -122,3 +122,4 @@ Voer het volgende commando uit in de Azure Cloud Shell:
 ```bash
 curl -o cleanup_azure.AZ https://raw.githubusercontent.com/fortnite-bot/EPI-S3/refs/heads/main/revert/cleanup_azure.AZ && chmod +x cleanup_azure.AZ && source ./cleanup_azure.AZ
 ```
+
