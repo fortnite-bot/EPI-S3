@@ -35,6 +35,11 @@ az vm open-port --resource-group $RESOURCE_GROUP --name $VM_NAME --port $TUNNEL_
 
 echo "--------------------------------------------------------"
 echo "Deployment Complete."
-echo "Get your Public IP with the following command:"
-az vm show -d -g $RESOURCE_GROUP -n $VM_NAME --query publicIps -o tsv
+PUB_IP=$(az vm show -d -g $RESOURCE_GROUP -n $VM_NAME --query publicIps -o tsv)
+echo "Public IP: $PUB_IP"
+echo "Username:  $ADMIN_USER"
+echo "Password:  $ADMIN_PASS"
+echo ""
+echo "Connect using:"
+echo "ssh $ADMIN_USER@$PUB_IP"
 echo "--------------------------------------------------------"
