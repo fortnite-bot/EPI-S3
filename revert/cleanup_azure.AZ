@@ -1,0 +1,19 @@
+# Azure CLI Script to DELETE the Jump Host Resources
+# Usage: Copy and paste this into Azure Cloud Shell.
+# WARNING: THIS WILL DELETE THE ENTIRE RESOURCE GROUP AND EVERYTHING IN IT.
+
+# --- Configuration Variables ---
+RESOURCE_GROUP="EPI-ResourceGroup"
+LOCATION="francecentral"
+VM_NAME="JumpHostVM"
+
+echo "Using Resource Group: $RESOURCE_GROUP"
+echo "WARNING: This will delete the entire resource group '$RESOURCE_GROUP' and all resources within it."
+echo "If you have other resources in this group, they will be lost."
+
+# Delete Resource Group
+# The --no-wait argument returns control to the terminal immediately while deletion happens in background.
+# The --yes argument confirms the deletion prompt automatically.
+az group delete --name $RESOURCE_GROUP --yes --no-wait
+
+echo "Deletion initiated. The resource group '$RESOURCE_GROUP' is being deleted in the background."

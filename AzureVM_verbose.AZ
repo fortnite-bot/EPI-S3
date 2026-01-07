@@ -1,0 +1,40 @@
+# Azure CLI Script to create the Jump Host VM
+# Usage: Copy and paste this entire block into the Azure Cloud Shell (Bash).
+# You may need to run 'az login' first if not using Cloud Shell.
+
+# --- Configuration Variables ---
+RESOURCE_GROUP="EPI-ResourceGroup"
+LOCATION="francecentral"
+VM_NAME="JumpHostVM"
+# Ubuntu Minimal 22.04 LTS URN
+IMAGE_URN="Canonical:0001-com-ubuntu-minimal-jammy:minimal-22_04-lts:latest"
+# Standard_B1s (Free services eligible)
+VM_SIZE="Standard_B1s"
+ADMIN_USER="azureuser"
+# CHANGE THIS PASSWORD BEFORE PASTING!
+ADMIN_PASS="ChangeMe123!"
+# Remote Port to open
+TUNNEL_PORT=2222
+
+echo "Starting Azure Resource creation..."
+
+# 1. Create Resource Group
+echo "Creating Resource Group: $RESOURCE_GROUP..."
+az group create --name $RESOURCE_GROUP --location $LOCATION
+
+# 2. Create Virtual Machine
+# "System updaten" & "SSH configureren" are done inside the VM later.
+# Authentication type: Password
+echo "Creating Virtual Machine: $VM_NAME..."
+az vm create --resource-group $RESOURCE_GROUP --name $VM_NAME --image $IMAGE_URN --size $VM_SIZE --admin-username $ADMIN_USER --admin-password $ADMIN_PASS --authentication-type password --public-ip-sku Standard --verbose
+
+# 3. Open Ports
+# Open the custom tunnel port (e.g., 2222)
+echo "Opening Port $TUNNEL_PORT for Reverse Tunnel..."
+az vm open-port --resource-group $RESOURCE_GROUP --name $VM_NAME --port $TUNNEL_PORT --priority 101
+
+echo "--------------------------------------------------------"
+echo "Deployment Complete."
+echo "Get your Public IP with the following command:"
+az vm show -d -g $RESOURCE_GROUP -n $VM_NAME --query publicIps -o tsv
+echo "--------------------------------------------------------"

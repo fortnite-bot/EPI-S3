@@ -1,0 +1,16 @@
+RESOURCE_GROUP="EPI-ResourceGroup"
+LOCATION="francecentral"
+VM_NAME="JumpHostVM"
+IMAGE_URN="Canonical:0001-com-ubuntu-minimal-jammy:minimal-22_04-lts:latest"
+VM_SIZE="Standard_B1s"
+ADMIN_USER="azureuser"
+ADMIN_PASS="ChangeMe123!"
+TUNNEL_PORT=2222
+
+az group create --name $RESOURCE_GROUP --location $LOCATION
+
+az vm create --resource-group $RESOURCE_GROUP --name $VM_NAME --image $IMAGE_URN --size $VM_SIZE --admin-username $ADMIN_USER --admin-password $ADMIN_PASS --authentication-type password --public-ip-sku Standard
+
+az vm open-port --resource-group $RESOURCE_GROUP --name $VM_NAME --port $TUNNEL_PORT --priority 1001
+
+az vm show -d -g $RESOURCE_GROUP -n $VM_NAME --query publicIps -o tsv
