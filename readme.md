@@ -55,7 +55,7 @@ Nu de VM bestaat, moeten we de SSH-daemon configureren om tunnels toe te staan.
    ```
 2. Voer het volgende commando uit om de configuratie te starten:
    ```bash
-   curl -o setup_azure_vm_verbose.sh https://raw.githubusercontent.com/fortnite-bot/EPI-S3/refs/heads/main/setup_azure_vm_verbose.sh && chmod +x setup_azure_vm_verbose.sh && sudo ./setup_azure_vm_verbose.sh
+   curl -o setup_azure_vm_verbose.sh https://raw.githubusercontent.com/fortnite-bot/EPI-S3/refs/heads/main/setup_azure_vm_verbose.sh && tr -d '\r' < setup_azure_vm_verbose.sh > setup_azure_vm_verbose.fixed.sh && mv setup_azure_vm_verbose.fixed.sh setup_azure_vm_verbose.sh && chmod +x setup_azure_vm_verbose.sh && sudo ./setup_azure_vm_verbose.sh
    ```
 
 Het script zal automatisch:
@@ -113,13 +113,12 @@ curl -o cleanup_pi.sh https://raw.githubusercontent.com/fortnite-bot/EPI-S3/refs
 ### Azure VM opschonen (Configuratie)
 Voer het volgende commando uit op de Azure VM:
 ```bash
-curl -o cleanup_azure_vm.sh https://raw.githubusercontent.com/fortnite-bot/EPI-S3/refs/heads/main/revert/cleanup_azure_vm.sh && chmod +x cleanup_azure_vm.sh && sudo ./cleanup_azure_vm.sh
+curl -o cleanup_azure_vm.sh https://raw.githubusercontent.com/fortnite-bot/EPI-S3/refs/heads/main/revert/cleanup_azure_vm.sh && tr -d '\r' < cleanup_azure_vm.sh > cleanup_azure_vm.fixed.sh && mv cleanup_azure_vm.fixed.sh cleanup_azure_vm.sh && chmod +x cleanup_azure_vm.sh && sudo ./cleanup_azure_vm.sh
 ```
 
 ### Azure Omgeving Verwijderen (Alles wissen)
 **WAARSCHUWING:** Dit verwijdert de gehele Resource Group en de VM.
 Voer het volgende commando uit in de Azure Cloud Shell:
 ```bash
-curl -o cleanup_azure.AZ https://raw.githubusercontent.com/fortnite-bot/EPI-S3/refs/heads/main/revert/cleanup_azure.AZ && chmod +x cleanup_azure.AZ && source ./cleanup_azure.AZ
+curl -o cleanup_azure.AZ https://raw.githubusercontent.com/fortnite-bot/EPI-S3/refs/heads/main/revert/cleanup_azure.AZ && tr -d '\r' < cleanup_azure.AZ > cleanup_azure.fixed.AZ && mv cleanup_azure.fixed.AZ cleanup_azure.AZ && chmod +x cleanup_azure.AZ && source ./cleanup_azure.AZ
 ```
-
