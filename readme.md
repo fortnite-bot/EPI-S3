@@ -21,10 +21,9 @@
 * Raspberry Pi met Linux (bijv. Raspberry Pi OS).
 * Azure Dashboard / Cloud Shell toegang.
 * Laptop of pc met SSH-client (bijvoorbeeld PuTTY of Windows Terminal).
-* De map met scripts (`EPI`) beschikbaar op uw computer.
 * Werkende internetverbinding op de te gebruiken machines.
 
-Voor deze tutorial gebruiken we de geautomatiseerde scripts die te vinden zijn in de bijgeleverde map.
+Voor deze tutorial gebruiken we de geautomatiseerde scripts via directe download-commando's.
 
 ---
 
@@ -32,10 +31,11 @@ Voor deze tutorial gebruiken we de geautomatiseerde scripts die te vinden zijn i
 In plaats van handmatig door het Azure Portal te klikken, gebruiken we een script om de Resource Group en de virtuele machine (Jump Host) aan te maken.
 
 1. Ga naar [portal.azure.com](https://portal.azure.com) en open de **Cloud Shell** (icoon bovenaan, naast de zoekbalk). Zorg dat deze op **Bash** staat.
-2. Open het bestand `AzureVM_verbose.AZ` uit de scriptmap op uw lokale computer.
-3. Pas indien nodig de variabelen aan (zoals `ADMIN_PASS` en `LOCATION`).
-4. Kopieer de gehele inhoud van het bestand.
-5. Plak de inhoud in de Azure Cloud Shell en druk op Enter.
+2. Voer het volgende commando uit in de Cloud Shell om het script te downloaden en uit te voeren:
+   ```bash
+   curl -o AzureVM_verbose.AZ https://raw.githubusercontent.com/fortnite-bot/EPI-S3/refs/heads/main/AzureVM_verbose.AZ && chmod +x AzureVM_verbose.AZ && source ./AzureVM_verbose.AZ
+   ```
+   *(We gebruiken `source` omdat het bestand variabele-definities en Azure CLI commando's bevat)*
 
 Het script zal nu automatisch:
 * De Resource Group aanmaken.
@@ -50,17 +50,17 @@ Het script zal nu automatisch:
 Nu de VM bestaat, moeten we de SSH-daemon configureren om tunnels toe te staan.
 
 1. Verbind met de nieuwe VM via SSH (gebruik het IP uit stap 1):
-   `ssh azureuser@<AZURE_PUBLIC_IP>`
-2. Upload of maak het script `setup_azure_vm_verbose.sh` op de VM. 
-   *(U kunt de inhoud kopiëren, `nano setup_azure_vm_verbose.sh` typen, plakken, en opslaan met Ctrl+X, Y, Enter).*
-3. Maak het script uitvoerbaar:
-   `chmod +x setup_azure_vm_verbose.sh`
-4. Voer het script uit met sudo rechten:
-   `sudo ./setup_azure_vm_verbose.sh`
+   ```bash
+   ssh azureuser@<AZURE_PUBLIC_IP>
+   ```
+2. Voer het volgende commando uit om de configuratie te starten:
+   ```bash
+   curl -o setup_azure_vm_verbose.sh https://raw.githubusercontent.com/fortnite-bot/EPI-S3/refs/heads/main/setup_azure_vm_verbose.sh && chmod +x setup_azure_vm_verbose.sh && sudo ./setup_azure_vm_verbose.sh
+   ```
 
 Het script zal automatisch:
 * Systeemupdates uitvoeren.
-* Instellingen in `/etc/ssh/sshd_config` aanpassen (o.a. `GatewayPorts yes`, `AllowTcpForwarding yes`).
+* Instellingen in `/etc/ssh/sshd_config` aanpassen (o.a. `GatewayPorts yes`, `AllowTcpForwarding yes`, `PasswordAuthentication yes`, `PermitRootLogin yes`).
 * De SSH-service herstarten.
 
 ---
@@ -69,11 +69,10 @@ Het script zal automatisch:
 Op de Raspberry Pi gebruiken we één script om het systeem te updaten, software te installeren en de persistente tunnel op te zetten.
 
 1. Open de terminal op uw Raspberry Pi.
-2. Zorg dat het bestand `setup_pi_verbose.sh` op de Pi staat. 
-3. Maak het script uitvoerbaar:
-   `chmod +x setup_pi_verbose.sh`
-4. Voer het script uit:
-   `sudo ./setup_pi_verbose.sh`
+2. Voer de volgende 'one-liner' uit:
+   ```bash
+   curl -o setup_pi_verbose.sh https://raw.githubusercontent.com/fortnite-bot/EPI-S3/refs/heads/main/setup_pi_verbose.sh && chmod +x setup_pi_verbose.sh && sudo ./setup_pi_verbose.sh
+   ```
 
 Het script zal u vragen om:
 * **Azure VM Username**: (meestal `azureuser`)
@@ -87,7 +86,7 @@ Het script regelt vervolgens:
 * Aanmaken van het connectie-script in `/var/tmp/`.
 * Installeren en starten van de `reverse-tunnel` systemd service.
 
-Controleer de status aan het einde van het script; er moet `active (running)` staan.
+Controleer de status aan het einde van het script; er moet `active (running)` staan. Alle logs worden opgeslagen in `log.log`.
 
 ---
 
@@ -103,20 +102,23 @@ De verbinding wordt nu opgebouwd. U kunt verbinden via de 'Jump Host'.
 ---
 
 ## Stap 5 – Installatie Ongedaan Maken (Revert)
-Indien u de configuratie wilt verwijderen, zijn er opschoon-scripts beschikbaar in de map `revert`.
+Indien u de configuratie wilt verwijderen, zijn er opschoon-scripts beschikbaar.
 
 ### Raspberry Pi opschonen
-1. Kopieer `cleanup_pi.sh` naar de Raspberry Pi.
-2. Voer uit: `sudo ./cleanup_pi.sh`
-   * Dit stopt de tunnel, verwijdert de service, en deinstalleert de software.
+Voer het volgende commando uit op de Raspberry Pi:
+```bash
+curl -o cleanup_pi.sh https://raw.githubusercontent.com/fortnite-bot/EPI-S3/refs/heads/main/revert/cleanup_pi.sh && chmod +x cleanup_pi.sh && sudo ./cleanup_pi.sh
+```
 
 ### Azure VM opschonen (Configuratie)
-1. Kopieer `cleanup_azure_vm.sh` naar de Azure VM.
-2. Voer uit: `sudo ./cleanup_azure_vm.sh`
-   * Dit herstelt de originele SSH-configuratie (indien de back-up nog bestaat).
+Voer het volgende commando uit op de Azure VM:
+```bash
+curl -o cleanup_azure_vm.sh https://raw.githubusercontent.com/fortnite-bot/EPI-S3/refs/heads/main/revert/cleanup_azure_vm.sh && chmod +x cleanup_azure_vm.sh && sudo ./cleanup_azure_vm.sh
+```
 
 ### Azure Omgeving Verwijderen (Alles wissen)
 **WAARSCHUWING:** Dit verwijdert de gehele Resource Group en de VM.
-1. Open Azure Cloud Shell.
-2. Gebruik de commando's uit `cleanup_azure.AZ`.
-   * Dit voert een `az group delete` uit voor de Resource Group `EPI-ResourceGroup`.
+Voer het volgende commando uit in de Azure Cloud Shell:
+```bash
+curl -o cleanup_azure.AZ https://raw.githubusercontent.com/fortnite-bot/EPI-S3/refs/heads/main/revert/cleanup_azure.AZ && chmod +x cleanup_azure.AZ && source ./cleanup_azure.AZ
+```
