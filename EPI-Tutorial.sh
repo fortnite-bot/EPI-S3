@@ -3,7 +3,7 @@
 # Configuration
 AZURE_USER="Jan"
 AZURE_IP="00.00.00.00"
-REMOTE_PORT=6767
+REMOTE_PORT=2222
 LOCAL_PORT=22
 PASSWORD="JanMarcel#67"
 
@@ -17,3 +17,4 @@ while true; do
     # If SSH exits, wait 1 second and retry
     sleep 1
 done
+
