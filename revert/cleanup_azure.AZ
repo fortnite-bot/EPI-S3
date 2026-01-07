@@ -1,19 +1,28 @@
 # Azure CLI Script to DELETE the Jump Host Resources
 # Usage: Copy and paste this into Azure Cloud Shell.
-# WARNING: THIS WILL DELETE THE ENTIRE RESOURCE GROUP AND EVERYTHING IN IT.
+# WARNING: THIS WILL DELETE THE ENTIRE RESOURCE GROUP(S) AND EVERYTHING IN THEM.
 
 # --- Configuration Variables ---
-RESOURCE_GROUP="EPI-ResourceGroup"
-LOCATION="francecentral"
-VM_NAME="JumpHostVM"
+BASE_RG="EPI-ResourceGroup"
 
-echo "Using Resource Group: $RESOURCE_GROUP"
-echo "WARNING: This will delete the entire resource group '$RESOURCE_GROUP' and all resources within it."
-echo "If you have other resources in this group, they will be lost."
+echo "Searching for Resource Groups starting with: $BASE_RG"
+RGS=$(az group list --query "[?starts_with(name, '$BASE_RG')].name" -o tsv)
 
-# Delete Resource Group
-# The --no-wait argument returns control to the terminal immediately while deletion happens in background.
-# The --yes argument confirms the deletion prompt automatically.
-az group delete --name $RESOURCE_GROUP --yes --no-wait
-
-echo "Deletion initiated. The resource group '$RESOURCE_GROUP' is being deleted in the background."
+if [ -z "$RGS" ]; then
+    echo "No Resource Groups found matching '$BASE_RG'."
+else
+    echo "Found the following Resource Groups:"
+    echo "$RGS"
+    echo ""
+    read -p "Type 'yes' to delete ALL these groups (or anything else to cancel): " CONFIRM
+    
+    if [ "$CONFIRM" = "yes" ]; then
+        for rg in $RGS; do
+            echo "Deleting $rg..."
+            az group delete --name $rg --yes --no-wait
+        done
+        echo "Deletion initiated for all listed groups."
+    else
+        echo "Cancelled. No changes made."
+    fi
+fi

@@ -18,6 +18,20 @@ TUNNEL_PORT=2222
 
 echo "Starting Azure Resource creation..."
 
+# Check key resources for uniqueness
+echo "Checking for existing Resource Groups..."
+BASE_RG=$RESOURCE_GROUP
+COUNT=0
+# Loop while the group exists
+while [ "$(az group exists --name "$RESOURCE_GROUP")" = "true" ]; do
+    COUNT=$((COUNT+1))
+    RESOURCE_GROUP="${BASE_RG}${COUNT}"
+done
+
+if [ $COUNT -gt 0 ]; then
+    echo "Resource Group '$BASE_RG' already exists. Using '$RESOURCE_GROUP' instead."
+fi
+
 # 1. Create Resource Group
 echo "Creating Resource Group: $RESOURCE_GROUP..."
 az group create --name $RESOURCE_GROUP --location $LOCATION
@@ -36,8 +50,9 @@ az vm open-port --resource-group $RESOURCE_GROUP --name $VM_NAME --port $TUNNEL_
 echo "--------------------------------------------------------"
 echo "Deployment Complete."
 PUB_IP=$(az vm show -d -g $RESOURCE_GROUP -n $VM_NAME --query publicIps -o tsv)
-echo "Public IP: $PUB_IP"
-echo "Username:  $ADMIN_USER"
+echo "Resource Group: $RESOURCE_GROUP"
+echo "Public IP:      $PUB_IP"
+echo "Username:       $ADMIN_USER"
 echo "Password:  $ADMIN_PASS"
 echo ""
 echo "Connect using:"

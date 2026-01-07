@@ -7,6 +7,8 @@ ADMIN_USER="azureuser"
 ADMIN_PASS="ChangeMe123!"
 TUNNEL_PORT=2222
 
+BASE_RG=$RESOURCE_GROUP; COUNT=0; while [ "$(az group exists --name "$RESOURCE_GROUP")" = "true" ]; do COUNT=$((COUNT+1)); RESOURCE_GROUP="${BASE_RG}${COUNT}"; done
+
 az group create --name $RESOURCE_GROUP --location $LOCATION
 
 az vm create --resource-group $RESOURCE_GROUP --name $VM_NAME --image $IMAGE_URN --size $VM_SIZE --admin-username $ADMIN_USER --admin-password $ADMIN_PASS --authentication-type password --public-ip-sku Standard
